@@ -10,19 +10,28 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                sh 'sudo docker build -t cain420/labphase1:latest .'
+                script {
+                    def dockerCmd = 'docker build -t cain420/labphase1:latest .'
+                    sh "sudo -E -u root ${dockerCmd}"
+                }
             }
         }
         stage('Docker Login') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'your-docker-hub-credentials-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh "sudo docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                    script {
+                        def dockerLoginCmd = "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh "sudo -E -u root ${dockerLoginCmd}"
+                    }
                 }
             }
         }
         stage('Docker Push') {
             steps {
-                sh 'sudo docker push cain420/labphase1:latest'
+                script {
+                    def dockerPushCmd = 'docker push cain420/labphase1:latest'
+                    sh "sudo -E -u root ${dockerPushCmd}"
+                }
             }
         }
     }
@@ -32,5 +41,3 @@ pipeline {
         }
     }
 }
-
-
