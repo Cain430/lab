@@ -9,8 +9,8 @@ pipeline {
         }
         stage('Dockerize Angular App') {
             steps {
-                sh 'docker build -t cain420/labphase1/angular-app .'
-                sh 'docker push cain420/labphase1/angular-app'
+                sh 'docker build -t cain420/labphase1:latest .'
+                sh 'docker push cain420/labphase1:latest'
             }
         }
     }
