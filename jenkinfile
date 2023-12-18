@@ -1,18 +1,36 @@
 pipeline {
     agent any
     stages {
-        stage('Build Angular App') {
+        stage('Checkout Code') {
             steps {
-                sh 'npm install'
-                sh 'ng build --prod'
+                checkout([$class: 'GitSCM', branches: [[name: 'main']],
+                          extensions: [],
+                          userRemoteConfigs: [[url: 'https://github.com/Cain430/lab.git']]])
             }
         }
-        stage('Dockerize Angular App') {
+        stage('Docker Build') {
             steps {
                 sh 'docker build -t cain420/labphase1:latest .'
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'your-docker-hub-credentials-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                }
+            }
+        }
+        stage('Docker Push') {
+            steps {
                 sh 'docker push cain420/labphase1:latest'
             }
         }
     }
+    post {
+        success {
+            echo 'Success: Docker image pushed to Docker Hub'
+        }
+    }
 }
+
 
